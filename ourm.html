@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Memories</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animation library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pastel-pink': '#E5A4B3',
+                        'pastel-purple': '#BDA8D2',
+                        'pastel-blue': '#9CBFD9',
+                        'pastel-green': '#A6D5A8',
+                        'pastel-yellow': '#EFD9A1',
+                        'light-pink': '#F8E5E9',
+                        'dark-pink': '#C76F85'
+                    },
+                    fontFamily: {
+                        'pacifico': ['Pacifico', 'cursive'],
+                        'quicksand': ['Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom CSS for animations */
+        .photo-container {
+            perspective: 1000px;
+        }
+        
+        .photo-card {
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .photo-card.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .photo-card:hover {
+            transform: rotateY(10deg) translateY(-10px);
+            box-shadow: -15px 20px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .polaroid {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .photo-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 60%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .polaroid:hover .photo-shine {
+            transform: translateX(100%);
+        }
+        
+        .sticker {
+            transition: all 0.3s ease;
+        }
+        
+        .sticker:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+        
+        .heartbeat {
+            animation: heartbeat 2s infinite;
+        }
+        
+        .heart-icon {
+            display: inline-block;
+            color: #C76F85;
+            margin: 0 5px;
+        }
+        
+        .note::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 30px;
+            height: 30px;
+            background-color: #FFF0F3;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        
+        /* Page turn animation */
+        .page-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-content {
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        
+        /* Glitter effect for special items */
+        @keyframes glitter {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .glitter-effect {
+            position: relative;
+        }
+        
+        .glitter-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 70%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0) 80%);
+            background-size: 200% 200%;
+            animation: glitter-move 5s infinite linear;
+            pointer-events: none;
+        }
+        
+        @keyframes glitter-move {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 200%; }
+        }
+
+        /* Ribbon effect */
+        .ribbon {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            z-index: 5;
+            overflow: hidden;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .ribbon-content {
+            position: absolute;
+            display: block;
+            width: 150px;
+            padding: 8px 0;
+            background-color: #E1C4FF;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            font-size: 14px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            right: -35px;
+            top: 20px;
+            transform: rotate(45deg);
+        }
+
+        /* Heart decorations */
+        .heart-decoration {
+            position: fixed;
+            font-size: 24px;
+            color: #C76F85;
+            opacity: 0.6;
+            z-index: -1;
+            animation: float 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Slide animation for photo cards */
+        .slide-right {
+            animation: slideRight 0.8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-left {
+            animation: slideLeft 0.8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes slideRight {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideLeft {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Photo popup styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .popup-overlay.active .popup-container {
+            transform: scale(1);
+        }
+
+        .popup-image {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background-color: #C76F85;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transform: rotate(0deg);
+            transition: all 0.3s ease;
+        }
+
+        .popup-close:hover {
+            transform: rotate(90deg);
+            background-color: #E5A4B3;
+        }
+
+        .popup-caption {
+            position: absolute;
+            bottom: -60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            padding: 10px;
+            font-family: 'Pacifico', cursive;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Fade in animation for elements */
+        .fade-in {
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Add cursor pointer to polaroid images */
+        .polaroid {
+            cursor: pointer;
+        }
+
+        /* Button hover effect */
+        .button-hover {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .button-hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.7s;
+        }
+
+        .button-hover:hover::after {
+            left: 100%;
+        }
+        
+        /* Modal Overlay */
+#memoryModal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 50;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.75); /* semi-transparent */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 800px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 1rem;
+  background-color: #C76F85;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Modal Footer */
+.modal-footer {
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Close Button */
+#closeModal {
+  color: white;
+  float: right;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#closeModal:hover {
+  color: #ffe6ea;
+}
+
+/* Video Style */
+.modal-video {
+  width: 100%;
+  max-height: 400px;
+  border-radius: 0.5rem;
+  background: #000;
+}
+
+/* Form Style */
+#thankYouForm {
+  display: none;
+  margin-top: 1rem;
+}
+
+#thankYouForm textarea {
+  width: 100%;
+  height: 100px;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  font-family: 'Quicksand', sans-serif;
+  resize: vertical;
+}
+
+#thankYouForm button {
+  margin-top: 0.75rem;
+  background-color: #C76F85;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#thankYouForm button:hover {
+  transform: scale(1.05);
+  background-color: #a9556d;
+}
+    </style>
+</head>
+<body class="bg-light-pink font-quicksand">
+    <!-- Heart Decorations -->
+    <div class="heart-decoration" style="top: 10%; left: 8%; color: #C76F85;">❤</div>
+    <div class="heart-decoration" style="top: 25%; right: 10%; animation-delay: 0.5s; color: #C76F85;">❤</div>
+    <div class="heart-decoration" style="top: 70%; left: 12%; animation-delay: 1s; color: #C76F85;">❤</div>
+    <div class="heart-decoration" style="top: 80%; right: 15%; animation-delay: 1.5s; color: #C76F85;">❤</div>
+    <div class="heart-decoration" style="top: 40%; left: 90%; animation-delay: 2s; color: #C76F85;">❤</div>
+
+    <!-- Photo Popup Overlay -->
+    <div class="popup-overlay" id="photoPopup">
+        <div class="popup-container">
+            <div class="popup-close" id="popupClose">&times;</div>
+            <img src="" alt="Enlarged photo" class="popup-image" id="popupImage">
+            <div class="popup-caption" id="popupCaption"></div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl page-wrapper">
+        <div class="page-content">
+            <!-- Header Section -->
+            <header class="text-center mb-10">
+                <h1 class="font-pacifico text-4xl md:text-6xl text-dark-pink animate__animated animate__fadeIn">
+                    Our Memories
+                </h1>
+                <div class="flex justify-center items-center gap-2 mt-2 animate__animated animate__fadeIn animate__delay-1s">
+                    <div class="h-0.5 w-16 bg-pastel-pink rounded-full"></div>
+                    <p class="text-lg text-pastel-purple font-medium">❤️</p>
+                    <div class="h-0.5 w-16 bg-pastel-pink rounded-full"></div>
+                </div>
+                <p class="text-gray-700 mt-4 max-w-xl mx-auto animate__animated animate__fadeIn animate__delay-2s">
+                    A collection of our precious moments together, capturing the fun and togetherness we have had.
+                </p>
+            </header>
+            
+            <!-- Main Content -->
+            <main>
+                <!-- Photo Grid Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    <!-- Photo 1 -->
+                    <div class="photo-container">
+                        <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+                            <div class="polaroid bg-white p-2 border-2 border-pastel-pink rounded">
+                                <div class="w-full h-64 overflow-hidden">
+                                    <img src="f5.jpg" alt="Memory 1" class="rounded w-full h-full object-cover">
+                                    <div class="photo-shine"></div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-start">
+                                <i class="fas fa-heart text-dark-pink text-xl mr-3 mt-1 heartbeat"></i>
+                                <div>
+                                    <h3 class="font-pacifico text-xl text-pastel-purple">KONTOL PELER ASU</h3>
+                                    <p class="text-gray-700 mt-1 font-medium">ihhhhhh gantengnya oyyyyyy</p>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 sticker">
+                                <div class="w-14 h-14 bg-pastel-yellow rounded-full flex items-center justify-center rotate-12">
+                                    <span class="font-pacifico text-sm text-dark-pink">☝️😔</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 2 -->
+<div class="photo-container">
+    <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+        <div class="polaroid bg-white p-2 border-2 border-pastel-blue rounded">
+            <div class="w-full h-64 overflow-hidden">
+                <video id="video1" class="memory-video rounded w-full h-full object-cover" autoplay muted loop playsinline>
+                    <source src="v1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="photo-shine"></div>
+            </div>
+        </div>
+        <div class="mt-4 flex items-start">
+            <i class="fas fa-film text-pastel-blue text-xl mr-3 mt-1"></i>
+            <div>
+                <h3 class="font-pacifico text-xl text-pastel-blue">PLPAK</h3>
+                <p class="text-gray-700 mt-1 font-medium">KONTOL ORANG EROPA</p>
+            </div>
+        </div>
+        <div class="absolute -bottom-3 -right-3 sticker">
+            <div class="w-14 h-14 bg-pastel-blue rounded-full flex items-center justify-center -rotate-12">
+                <span class="font-pacifico text-sm text-white">🐾</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo 3 -->
+<div class="photo-container">
+    <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+        <div class="polaroid bg-white p-2 border-2 border-pastel-purple rounded">
+            <div class="w-full h-64 overflow-hidden">
+                <video id="video2" class="memory-video rounded w-full h-full object-cover" autoplay muted loop playsinline>
+                    <source src="v2.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="photo-shine"></div>
+            </div>
+        </div>
+        <div class="mt-4 flex items-start">
+            <i class="fas fa-coffee text-pastel-purple text-xl mr-3 mt-1"></i>
+            <div>
+                <h3 class="font-pacifico text-xl text-pastel-purple">apapapspkdjd</h3>
+                <p class="text-gray-700 mt-1 font-medium">dhdhdjhdhd</p>
+            </div>
+        </div>
+        <div class="absolute -top-3 -left-3 sticker">
+            <div class="w-14 h-14 bg-pastel-purple rounded-full flex items-center justify-center rotate-12">
+                <span class="font-pacifico text-sm text-white">😼</span>
+            </div>
+        </div>
+    </div>
+</div>
+                    
+                    <!-- Photo 4 -->
+                    <div class="photo-container">
+                        <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+                            <div class="polaroid bg-white p-2 border-2 border-pastel-green rounded">
+                                <div class="w-full h-64 overflow-hidden">
+                                    <img src="f2.jpg" alt="Memory 4" class="rounded w-full h-full object-cover">
+                                    <div class="photo-shine"></div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-start">
+                                <i class="fas fa-tree text-pastel-green text-xl mr-3 mt-1"></i>
+                                <div>
+                                    <h3 class="font-pacifico text-xl text-pastel-green">jakaksj</h3>
+                                    <p class="text-gray-700 mt-1 font-medium">djskjdjdjdkd</p>
+                                </div>
+                            </div>
+                            <div class="absolute -bottom-3 -left-3 sticker">
+                                <div class="w-14 h-14 bg-pastel-green rounded-full flex items-center justify-center rotate-12">
+                                    <span class="font-pacifico text-sm text-white">🤨</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 5 -->
+                    <div class="photo-container">
+                        <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+                            <div class="polaroid bg-white p-2 border-2 border-dark-pink rounded">
+                                <div class="w-full h-64 overflow-hidden">
+                                    <img src="f3.jpg" alt="Memory 5" class="rounded w-full h-full object-cover">
+                                    <div class="photo-shine"></div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-start">
+                                <i class="fas fa-gift text-dark-pink text-xl mr-3 mt-1"></i>
+                                <div>
+                                    <h3 class="font-pacifico text-xl text-dark-pink">sjsksd</h3>
+                                    <p class="text-gray-700 mt-1 font-medium">smkskskskd</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-1/2 -right-3 sticker">
+                                <div class="w-14 h-14 bg-dark-pink rounded-full flex items-center justify-center -rotate-12">
+                                    <span class="font-pacifico text-sm text-white">🫂</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 6 -->
+                    <div class="photo-container">
+                        <div class="photo-card bg-white rounded-lg p-4 shadow-lg">
+                            <div class="polaroid bg-white p-2 border-2 border-pastel-yellow rounded">
+                                <div class="w-full h-64 overflow-hidden">
+                                    <img src="f4.jpg" alt="Memory 6" class="rounded w-full h-full object-cover">
+                                    <div class="photo-shine"></div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-start">
+                                <i class="fas fa-film text-pastel-yellow text-xl mr-3 mt-1"></i>
+                                <div>
+                                    <h3 class="font-pacifico text-xl text-pastel-yellow">sjskjssj</h3>
+                                    <p class="text-gray-700 mt-1 font-medium">kamu kek kontol<br></p>
+                                </div>
+                            </div>
+                            <div class="absolute top-1/2 -left-3 sticker">
+                                <div class="w-14 h-14 bg-pastel-yellow rounded-full flex items-center justify-center rotate-12">
+                                    <span class="font-pacifico text-sm text-dark-pink">👉👈</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Special Note Section -->
+                <div class="relative mx-auto max-w-2xl mb-16 mt-24 opacity-0" id="specialNote">
+                    <div class="relative z-10 bg-white p-8 rounded-lg shadow-lg border-2 border-pastel-pink note glitter-effect">
+                        <h2 class="font-pacifico text-3xl text-center text-dark-pink mb-4">A Note For You</h2>
+                        <p class="text-gray-700 text-center leading-relaxed font-medium">
+                            Jika langit mengizinkan, akan kutulis puisi di atas altar bintang. agar saat kau membacanya 2000 tahun lalu
+Kau tahu, ada aku di masa depan, yang masih mencintaimu tanpa alasan
+                            <span class="heart-icon heartbeat">❤</span>
+                        </p>
+                        <div class="mt-6 text-center">
+                            <span class="inline-block font-pacifico text-xl text-pastel-purple">With all my love,</span>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="font-pacifico text-xl text-dark-pink">Firman </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Button to Create More Memories -->
+                <div class="text-center mt-16 mb-8 opacity-0" id="createButton">
+                    <button class="button-hover bg-dark-pink text-white font-medium py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 inline-flex items-center gap-2">
+                        <span>Tayangkan sekarang!</span>
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <
+                </div>
+                <!-- Modal for Video -->
+<div id="videoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-white rounded-lg max-w-2xl w-full p-4 relative">
+        <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-dark-pink text-2xl">&times;</button>
+        <video id="hbdVideo" class="w-full rounded-lg mb-4" controls>
+            <source src="ucapan.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="text-center">
+            <button id="toFormButton" class="bg-dark-pink text-white font-medium py-2 px-6 rounded-full shadow hover:shadow-md transition-all hover:scale-105">
+                Kasih Ucapan Terimakasih
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Thank You Form -->
+<div id="thankYouForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-white rounded-lg max-w-lg w-full p-6 relative">
+        <button id="closeForm" class="absolute top-3 right-3 bg-gray-300 text-black rounded-full w-10 h-10 flex items-center justify-center shadow-md transition-all text-2xl">&times;</button>
+        <h2 class="text-dark-pink font-pacifico text-3xl mb-4 text-center">Ucapan Terimakasih</h2>
+        <form id="formUcapan" class="space-y-4">
+            <input type="text" placeholder="Nama kamu" class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-pink" required>
+            <textarea placeholder="Tulis ucapan manismu..." class="w-full border rounded px-4 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-pastel-pink" required></textarea>
+            <div class="text-center">
+                <button type="submit" class="bg-dark-pink text-white py-2 px-8 rounded-full shadow hover:shadow-lg transition-all hover:scale-105">
+                    Kirim Ucapan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="text-center mt-20 mb-8">
+                <p class="text-gray-700">Dibuat spesial
+                    <i class="fas fa-heart text-dark-pink heartbeat"></i>, Dari Firman 
+                </p>
+            </footer>
+        </div>
+    </div>
+    
+
+    <script>
+    const videos = document.querySelectorAll(".memory-video");
+
+    videos.forEach((video) => {
+        video.addEventListener("click", function () {
+            // Kalau video ini sedang mute, mute semua lalu unmute dia
+            if (video.muted) {
+                videos.forEach(v => {
+                    v.muted = true;
+                });
+                video.muted = false;
+                video.play();
+            } else {
+                // Kalau video ini tidak mute, mute dia sendiri
+                video.muted = true;
+            }
+        });
+    });
+    
+    const openBtn = document.getElementById('createButton').querySelector('button');
+    const videoModal = document.getElementById('videoModal');
+    const closeModal = document.getElementById('closeModal');
+    const toFormButton = document.getElementById('toFormButton');
+    const thankYouForm = document.getElementById('thankYouForm');
+    const closeForm = document.getElementById('closeForm');
+
+    openBtn.addEventListener('click', () => {
+        videoModal.classList.remove('hidden');
+    });
+
+    closeModal.addEventListener('click', () => {
+        videoModal.classList.add('hidden');
+        document.getElementById('hbdVideo').pause();
+    });
+    
+    toFormButton.addEventListener('click', () => {
+    window.location.href = "send.html";
+});
+
+    closeForm.addEventListener('click', () => {
+        thankYouForm.classList.add('hidden');
+    });
+
+    // Optional: Handle form submit
+    document.getElementById('formUcapan').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert("Terimakasih, ucapanmu sudah dikirim!");
+        thankYouForm.classList.add('hidden');
+        this.reset();
+    });
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation for photo cards with staggered delay
+            const photoCards = document.querySelectorAll('.photo-card');
+            
+            photoCards.forEach((card, index) => {
+                // Set initial state
+                card.style.transitionDelay = `${index * 0.15}s`;
+                
+                // Animate cards when they come into view
+                setTimeout(() => {
+                    card.classList.add('animate');
+                }, 500 + (index * 150));
+            });
+            
+            // Animation for special note section - fade in when scrolled to
+            const specialNote = document.getElementById('specialNote');
+            const createButton = document.getElementById('createButton');
+            
+            // Function to check if an element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.bottom >= 0
+                );
+            }
+            
+            // Function to handle scroll animations
+            function handleScrollAnimations() {
+                if (isInViewport(specialNote) && specialNote.style.opacity !== '1') {
+                    specialNote.style.transition = 'opacity 1s ease, transform 1s ease';
+                    specialNote.style.opacity = '1';
+                    specialNote.style.transform = 'translateY(0)';
+                }
+                
+                if (isInViewport(createButton) && createButton.style.opacity !== '1') {
+                    createButton.style.transition = 'opacity 1s ease, transform 1s ease';
+                    createButton.style.opacity = '1';
+                    createButton.style.transform = 'translateY(0)';
+                }
+            }
+            
+            // Initial check and set up scroll listener
+            handleScrollAnimations();
+            window.addEventListener('scroll', handleScrollAnimations);
+            
+            // Set initial positions for animated elements
+            specialNote.style.transform = 'translateY(30px)';
+            createButton.style.transform = 'translateY(30px)';
+            
+            // Photo popup functionality
+            const photoPopup = document.getElementById('photoPopup');
+            const popupImage = document.getElementById('popupImage');
+            const popupClose = document.getElementById('popupClose');
+            const popupCaption = document.getElementById('popupCaption');
+            const allPolaroids = document.querySelectorAll('.polaroid');
+            
+            // Open popup when clicking on a polaroid
+            allPolaroids.forEach(polaroid => {
+                polaroid.addEventListener('click', function() {
+                    const imgSrc = this.querySelector('img').src;
+                    const cardTitle = this.closest('.photo-card').querySelector('h3').textContent;
+                    const cardDesc = this.closest('.photo-card').querySelector('p').textContent;
+                    
+                    popupImage.src = imgSrc;
+                    popupCaption.textContent = cardTitle + ' - ' + cardDesc;
+                    photoPopup.classList.add('active');
+                    
+                    // Prevent body scrolling when popup is open
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            // Close popup when clicking the close button
+            popupClose.addEventListener('click', function() {
+                photoPopup.classList.remove('active');
+                
+                // Re-enable body scrolling
+                document.body.style.overflow = '';
+            });
+            
+            // Close popup when clicking outside the image
+            photoPopup.addEventListener('click', function(e) {
+                if (e.target === photoPopup) {
+                    photoPopup.classList.remove('active');
+                    
+                    // Re-enable body scrolling
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Close popup with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && photoPopup.classList.contains('active')) {
+                    photoPopup.classList.remove('active');
+                    
+                    // Re-enable body scrolling
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
