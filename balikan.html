@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALIKAN</title>
+    <style>
+    body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f9e3e3;
+    font-family: 'Arial', sans-serif;
+    flex-direction: column;
+  }
+  
+  .container {
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    color: #d32f2f;
+  }
+  
+  .buttons {
+    margin-top: 20px;
+  }
+  
+  .yes-button {
+    font-size: 1.5em;
+    padding: 10px 20px;
+    margin-right: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .no-button {
+    font-size: 1.5em;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .gif_container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Apakah Kirana mau balikan?</h1>
+        <div class="buttons">
+            <button class="yes-button" onclick="handleYesClick()">Iyaa</button>
+            <button class="no-button" onclick="handleNoClick()">Ndaa</button>
+        </div>
+        <div class="gif_container">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW5lenZyZHI5OXM2eW95b3pmMG40cWVrMDhtNjVuM3A4dGNxa2g2dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/VM1fcpu2bKs1e2Kdbj/giphy.gif" alt="Cute GIF">
+        </div>
+    </div>
+    <script>
+    const messages = [
+    "Apakah kirana yakin?",
+    "Yakinn??",
+    "Apakah benar?",
+    "Bener nih?",
+    "Ngga salah?",
+    "Kalo jawab tidak, firman nangis",
+    "Aku akan sangat sedih",
+    "Aku akan nangis",
+    "Ok fine, I will stop asking...",
+    "Just kidding, say yes please! ❤️"
+];
+
+let messageIndex = 0;
+
+function handleNoClick() {
+    const noButton = document.querySelector('.no-button');
+    const yesButton = document.querySelector('.yes-button');
+    noButton.textContent = messages[messageIndex];
+    messageIndex = (messageIndex + 1) % messages.length;
+    const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
+    yesButton.style.fontSize = `${currentSize * 1.5}px`;
+}
+
+function handleYesClick() {
+    const apiURL = "https://api.telegram.org/bot7928795010:AAF3KKnXR5sMfDG3clUUP5lOKqFNw_kLRHg/sendMessage";
+    const userID = "6080777383";
+    const message = "Kirana memilih untuk balikan!";
+
+    fetch(apiURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            chat_id: userID,
+            text: message
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = "yes_page.html";
+        } else {
+            alert("Gagal mengirim data ke bot.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Terjadi kesalahan saat mengirim data.");
+    });
+}
+</script>
+    </script>
+</body>
+</html>
